@@ -3,10 +3,11 @@
 #include <iostream>
 using namespace std;
 
-//constructor initializes player with name and bet amount
-Player::Player(string playerName, int bet) {
+//constructor initializes player with name and bet amount, and starting balance
+Player::Player(string playerName, int bet, int startingBalance) {
     this->name = playerName;
     this->bet = bet;
+    this->bankroll = startingBalance;
 }
 
 // Adds new cards to the player's hand
@@ -38,7 +39,7 @@ int Player::addAllCardValues(const vector<string>& h) const{
     for (const auto& c : h) {
         int v = getCardValue(c);
         value += v;
-        if (c == "A") aces++;
+        if (c[0] == 'A') aces++;
     }
 
     while (value > 21 && aces > 0) {
@@ -164,4 +165,24 @@ void Player::setSplitResult(const vector<int>& res) {
 
 vector<int> Player::getSplitResult() const {
     return splitResults;
+}
+
+//set the bet 
+void Player::setBet(int b) {
+    bet = b;
+}
+
+//functiom to output current bankroll balance
+int Player::getBankroll() const{
+    return bankroll;
+}
+
+//function to get bet amount
+int Player::getBet() const{
+    return bet;
+}
+
+//function to update bankroll amount after the round
+void Player::updateBankroll(int amount){
+    bankroll += amount;
 }

@@ -10,6 +10,7 @@ private:
     string name;
     vector<string> hand;
     int bet;
+    int bankroll;
 
     // Split hands
     vector<string> hand1;
@@ -25,13 +26,17 @@ private:
     int addAllCardValues(const vector<string>& h) const;
 
 public:
-    Player(string playerName, int bet);
+    Player(string playerName, int bet, int startingBalance = 100);
 
     // Basic hand
     void addToHand(const vector<string>& cards);
     void displayHand() const;
     int getHandValue() const;
     vector<string> getHand() const;
+    int getBankroll() const;
+    void updateBankroll(int amount);
+    int getBet() const;
+    void setBet(int b);
 
    
     string getName() const;

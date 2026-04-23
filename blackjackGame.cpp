@@ -82,25 +82,42 @@ void BlackjackGame::PlayersTurn() {
                 cout << "You stand with " << val << endl;
                 done = true;
             }
+            
             else if (action == "double") {
-                // Player doubles down: we hit once, set their result, and end their turn
+                int currentBet = players[i].getBet();
+                int newBet = currentBet * 2;
+
+                if (newBet <= players[i].getBankroll()) {
+                players[i].setBet(newBet);
+
                 players[i].callingHit();
                 int val = players[i].getHandValue();
                 players[i].setResult(val);
-                cout << "You doubled and stand with " << val << endl;
+
+                cout << "You doubled down! New bet: " << newBet << endl;
+                cout << "Final value: " << val << endl;
+
                 done = true;
-            }
-            else if (action == "split") {
-                // Player chooses to split: we check if they can split, perform the split, and then play both hands
-                if (players[i].canSplit()) {
-                    players[i].doSplit();
-                    vector<int> splitResults = players[i].usingSplit();
-                    players[i].setSplitResult(splitResults);
-                    done = true;
-                } else {
-                    cout << "You cannot split this hand." << endl;
+                } 
+                else {
+                   cout << "Not enough balance to double down." << endl;
                 }
             }
+            else if (action == "split") {
+                if (players[i].canSplit()) {
+
+                players[i].doSplit();
+
+                vector<int> splitResults = players[i].usingSplit();
+
+                players[i].setSplitResult(splitResults);
+
+                done = true;
+
+            } else {
+                cout << "You cannot split this hand." << endl;
+            }
+        }
             else {
                 cout << "Invalid action." << endl;
             }
@@ -108,23 +125,32 @@ void BlackjackGame::PlayersTurn() {
     }
 }
 
-// Logic to determine the outcome of a player's hand against the dealer's hand, accounting for busts and ties
+// Logic to determine the outcome of a player's hand against the dealer's hand, accounting for busts and ties, added output of bet winnings
 void BlackjackGame::ElevationLogic(Player& player, int playerValue, int dealerValue) {
+    int bet = player.getBet();
+
     if (playerValue > 21) {
         cout << "You busted! Dealer wins." << endl;
+        player.updateBankroll(-bet);
     }
     else if (dealerValue > 21) {
         cout << "Dealer busted! You win." << endl;
+        player.updateBankroll(bet);
     }
     else if (playerValue > dealerValue) {
         cout << "You win with " << playerValue << " against dealer's " << dealerValue << "!" << endl;
+        player.updateBankroll(bet);
     }
     else if (playerValue < dealerValue) {
         cout << "Dealer wins with " << dealerValue << " against your " << playerValue << "." << endl;
+        player.updateBankroll(-bet);
     }
     else {
         cout << "It's a tie with both at " << playerValue << "." << endl;
+        // no change
     }
+
+    cout << "New balance: " << player.getBankroll() << endl;
 }
 
 // Main game logic: initializes players, deals initial cards, manages turns, and evaluates results at the end
@@ -134,19 +160,33 @@ void BlackjackGame::startGame() {
 
     players.clear();
     players.reserve(numPlayers);
+//modified loop logic to include bankroll and player creation
+for (int i = 0; i < numPlayers; i++) {
+    int bet = 0;
 
-    for (int i = 0; i < numPlayers; i++) {
-        int bet = 0;
-        cout << "\nPlayer " << playerNames.at(i) << ", place your bet: ";
+    //create player (so bankroll exists)
+    players.emplace_back(playerNames.at(i), 0);
+
+    //validate bet using bankroll
+    while (true) {
+        cout << "\nPlayer " << playerNames.at(i)
+             << ", enter bet (available: "
+             << players[i].getBankroll() << "): ";
         cin >> bet;
 
-        players.emplace_back(playerNames.at(i), bet);
+        if (bet > 0 && bet <= players[i].getBankroll()) break;
 
-        vector<string> cards = retrievecards(2);
-        players[i].addToHand(cards);
-
-        players[i].displayHand();
+        cout << "Invalid bet. Try again.\n";
     }
+
+    //store bet
+    players[i].setBet(bet);
+
+    //deal cards
+    vector<string> cards = retrievecards(2);
+    players[i].addToHand(cards);
+    players[i].displayHand();
+}
 
     
 
