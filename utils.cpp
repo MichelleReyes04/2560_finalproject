@@ -30,3 +30,9 @@ int getCardValue(const string& card) {
     if (card == "K" || card == "Q" || card == "J") return 10;
     return stoi(card); 
 }
+//suggest risky or strong hit or stand
+string getSuggestion(int value){
+    if( value<=11) return "strongly suggest HIT";
+    if( value<=16) return "Risky - consider HIT";
+    return "Suggest Stand";
+}

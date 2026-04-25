@@ -12,4 +12,7 @@ vector<string> retrievecards(int n);
 // Converts card string to blackjack value
 int getCardValue(const string& card);
 
+//probability helper
+string getSuggestion(int value);
+
 #endif

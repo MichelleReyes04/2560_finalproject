@@ -60,6 +60,11 @@ void BlackjackGame::PlayersTurn() {
         bool done = false;
 
         while (!done) {
+
+            //probability helper
+            int val = players[i].getHandValue();
+            cout << "Suggestion: " <<getSuggestion(val) << endl;
+
             cout << "\nChoose action (hit / stand / double / split): ";
             cin >> action;
 
